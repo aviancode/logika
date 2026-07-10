@@ -1,0 +1,10 @@
+[package]
+name = "orbita-store"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+description = "Persistence contracts for orbita"
+
+[lints]
+workspace = true

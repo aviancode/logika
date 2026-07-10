@@ -1,0 +1,10 @@
+[package]
+name = "orbita-runtime"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+description = "Workflow runtime for orbita"
+
+[lints]
+workspace = true
