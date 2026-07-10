@@ -1,6 +1,6 @@
 use std::{error, fmt};
 
-use crate::IdentifierError;
+use crate::{IdentifierError, PayloadValidationError, SchemaError};
 
 type BoxError = Box<dyn error::Error + Send + Sync + 'static>;
 
@@ -227,6 +227,20 @@ impl From<IdentifierError> for Error {
     fn from(source: IdentifierError) -> Self {
         let message = source.to_string();
         Self::Validation(ErrorDetail::new("core.invalid_identifier", message).with_source(source))
+    }
+}
+
+impl From<SchemaError> for Error {
+    fn from(source: SchemaError) -> Self {
+        let message = source.to_string();
+        Self::Schema(ErrorDetail::new("core.invalid_schema", message).with_source(source))
+    }
+}
+
+impl From<PayloadValidationError> for Error {
+    fn from(source: PayloadValidationError) -> Self {
+        let message = source.to_string();
+        Self::Schema(ErrorDetail::new("core.invalid_payload", message).with_source(source))
     }
 }
 
