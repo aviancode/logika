@@ -3,3 +3,7 @@
 
 # Dependency lock file
 Cargo.lock
+
+# AI directory
+AGENTS.md
+.agents

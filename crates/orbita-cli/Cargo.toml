@@ -1,0 +1,16 @@
+[package]
+name = "orbita-cli"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+description = "Command-line interface for orbita workflows"
+publish = false
+
+[[bin]]
+name = "orbita"
+path = "src/main.rs"
+doc = false
+
+[lints]
+workspace = true
