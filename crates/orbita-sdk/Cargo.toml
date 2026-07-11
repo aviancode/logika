@@ -6,5 +6,11 @@ rust-version.workspace = true
 license.workspace = true
 description = "Rust SDK for orbita node authors"
 
+[dependencies]
+orbita-core.workspace = true
+orbita-sdk-macros.workspace = true
+orbita-workflow.workspace = true
+semver = "1"
+
 [lints]
 workspace = true

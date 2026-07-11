@@ -8,6 +8,7 @@ members = [
     "crates/orbita-registry",
     "crates/orbita-runtime",
     "crates/orbita-sdk",
+    "crates/orbita-sdk-macros",
     "crates/orbita-store",
     "crates/orbita-testkit",
     "crates/orbita-workflow",
@@ -33,6 +34,7 @@ orbita-plugin-host = { path = "crates/orbita-plugin-host", version = "0.1.0" }
 orbita-registry = { path = "crates/orbita-registry", version = "0.1.0" }
 orbita-runtime = { path = "crates/orbita-runtime", version = "0.1.0" }
 orbita-sdk = { path = "crates/orbita-sdk", version = "0.1.0" }
+orbita-sdk-macros = { path = "crates/orbita-sdk-macros", version = "0.1.0" }
 orbita-store = { path = "crates/orbita-store", version = "0.1.0" }
 orbita-testkit = { path = "crates/orbita-testkit", version = "0.1.0" }
 orbita-workflow = { path = "crates/orbita-workflow", version = "0.1.0" }
