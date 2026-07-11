@@ -1,0 +1,6 @@
+apiVersion: orbita.dev/v1
+kind: Workflow
+metadata:
+  name: empty-release-workflow
+  version: 1.0.0
+spec: {}

@@ -39,5 +39,8 @@ orbita-store = { workspace = true, optional = true }
 orbita-testkit = { workspace = true, optional = true }
 orbita-workflow = { workspace = true, optional = true }
 
+[dev-dependencies]
+semver = "1"
+
 [lints]
 workspace = true

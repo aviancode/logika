@@ -1,0 +1,16 @@
+{
+  "apiVersion": "orbita.dev/v1",
+  "kind": "Workflow",
+  "metadata": {
+    "name": "unresolved-release-workflow",
+    "version": "1.0.0"
+  },
+  "spec": {
+    "nodes": [
+      {
+        "id": "missing",
+        "uses": "acme/missing@^1"
+      }
+    ]
+  }
+}
