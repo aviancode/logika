@@ -5,6 +5,9 @@ edition.workspace = true
 rust-version.workspace = true
 license.workspace = true
 description = "Rust SDK for orbita node authors"
+repository.workspace = true
+homepage.workspace = true
+readme = "README.md"
 
 [dependencies]
 orbita-core.workspace = true

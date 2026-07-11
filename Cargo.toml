@@ -25,6 +25,8 @@ version = "0.1.0"
 edition = "2024"
 license = "MIT"
 rust-version = "1.85"
+repository = "https://github.com/aviancode/orbita"
+homepage = "https://github.com/aviancode/orbita"
 
 [workspace.dependencies]
 orbita = { path = "crates/orbita", version = "0.1.0" }

@@ -5,6 +5,7 @@ edition.workspace = true
 rust-version.workspace = true
 license.workspace = true
 description = "Workflow runtime for orbita"
+publish = false
 
 [lints]
 workspace = true

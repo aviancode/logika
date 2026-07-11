@@ -5,6 +5,9 @@ edition.workspace = true
 rust-version.workspace = true
 license.workspace = true
 description = "Workflow document model and validation for orbita"
+repository.workspace = true
+homepage.workspace = true
+readme = "README.md"
 
 [dependencies]
 orbita-core.workspace = true

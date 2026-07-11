@@ -5,38 +5,26 @@ edition.workspace = true
 rust-version.workspace = true
 license.workspace = true
 description = "Embedded workflow engine facade"
+repository.workspace = true
+homepage.workspace = true
+readme = "README.md"
+# The `orbita` package name belongs to an unrelated project on crates.io.
+publish = false
 
 [features]
-default = ["core", "workflow", "runtime", "sdk", "registry", "store"]
-full = [
-    "core",
-    "workflow",
-    "runtime",
-    "sdk",
-    "plugin-api",
-    "plugin-host",
-    "registry",
-    "store",
-]
+default = ["core", "workflow", "sdk", "registry", "store"]
+full = ["core", "workflow", "sdk", "registry", "store"]
 core = ["dep:orbita-core"]
 workflow = ["dep:orbita-workflow"]
-runtime = ["dep:orbita-runtime"]
 sdk = ["dep:orbita-sdk"]
-plugin-api = ["dep:orbita-plugin-api"]
-plugin-host = ["dep:orbita-plugin-host"]
 registry = ["dep:orbita-registry"]
 store = ["dep:orbita-store"]
-testkit = ["dep:orbita-testkit"]
 
 [dependencies]
 orbita-core = { workspace = true, optional = true }
-orbita-plugin-api = { workspace = true, optional = true }
-orbita-plugin-host = { workspace = true, optional = true }
 orbita-registry = { workspace = true, optional = true }
-orbita-runtime = { workspace = true, optional = true }
 orbita-sdk = { workspace = true, optional = true }
 orbita-store = { workspace = true, optional = true }
-orbita-testkit = { workspace = true, optional = true }
 orbita-workflow = { workspace = true, optional = true }
 
 [dev-dependencies]
