@@ -4,7 +4,12 @@ version.workspace = true
 edition.workspace = true
 rust-version.workspace = true
 license.workspace = true
-description = "Plugin registry contracts for orbita"
+description = "Node and plugin registry for orbita"
+
+[dependencies]
+orbita-core.workspace = true
+orbita-workflow.workspace = true
+semver = "1"
 
 [lints]
 workspace = true
