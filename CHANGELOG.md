@@ -2,6 +2,14 @@
 
 All notable changes to this project are documented in this file.
 
+## [0.1.2] - 2026-07-12
+
+### Changed
+
+- Published the `logika` facade crate as the primary crates.io entry point.
+- Retried crates.io uploads with bounded backoff when the registry responds
+  with HTTP 429 rate limiting.
+
 ## [0.1.1] - 2026-07-12
 
 ### Changed

@@ -42,7 +42,7 @@ fn emits_machine_readable_diagnostics_and_release_version() {
     assert_eq!(version.status.code(), Some(0));
     assert_eq!(
         String::from_utf8_lossy(&version.stdout).trim(),
-        "logika 0.1.1"
+        "logika 0.1.2"
     );
 }
 

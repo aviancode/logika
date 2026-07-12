@@ -8,8 +8,6 @@ description = "Embedded workflow engine facade"
 repository.workspace = true
 homepage.workspace = true
 readme = "README.md"
-# The `logika` package name belongs to an unrelated project on crates.io.
-publish = false
 
 [features]
 default = ["core", "workflow", "sdk", "registry", "store"]

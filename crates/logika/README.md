@@ -18,19 +18,17 @@ is planned for 0.2.
 
 ```toml
 [dependencies]
-logika = { git = "https://github.com/aviancode/logika", tag = "v0.1.1" }
+logika = "0.1.2"
 ```
 
-The `logika` package name is already owned by an unrelated project on
-crates.io, so this facade cannot be published there under its current name.
-The component crates remain independently publishable.
+The facade and its component crates are published on crates.io.
 
 Default features expose the `core`, `workflow`, `sdk`, `registry`, and `store`
 modules. Disable default features to select only the parts an application uses:
 
 ```toml
 [dependencies]
-logika = { git = "https://github.com/aviancode/logika", tag = "v0.1.1", default-features = false, features = ["workflow"] }
+logika = { version = "0.1.2", default-features = false, features = ["workflow"] }
 ```
 
 See the [repository](https://github.com/aviancode/logika) for examples and

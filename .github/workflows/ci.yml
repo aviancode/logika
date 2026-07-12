@@ -90,13 +90,41 @@ jobs:
 
           publish_crate() {
             local crate="$1"
+            local delay
+            local publish_output
             if is_published "$crate"; then
               echo "$crate@$RELEASE_VERSION is already published; skipping"
               return 0
             fi
 
-            cargo publish --registry crates-io --package "$crate"
-            wait_until_published "$crate"
+            for attempt in {1..6}; do
+              if publish_output="$(
+                cargo publish --registry crates-io --package "$crate" 2>&1
+              )"; then
+                printf '%s\n' "$publish_output"
+                wait_until_published "$crate"
+                return 0
+              fi
+
+              printf '%s\n' "$publish_output" >&2
+              if [[ "$publish_output" != *"429 Too Many Requests"* ]]; then
+                return 1
+              fi
+              if (( attempt == 6 )); then
+                break
+              fi
+
+              delay=$((attempt * 60))
+              echo "crates.io rate limit hit for $crate; retrying in ${delay}s ($attempt/6)"
+              sleep "$delay"
+
+              if is_published "$crate"; then
+                return 0
+              fi
+            done
+
+            echo "unable to publish $crate@$RELEASE_VERSION after rate-limit retries" >&2
+            return 1
           }
 
           # Keep this list in dependency order. Waiting after every upload makes
@@ -109,6 +137,7 @@ jobs:
             logika-sdk
             logika-store
             logika-cli
+            logika
           )
 
           for crate in "${crates[@]}"; do

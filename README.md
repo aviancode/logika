@@ -5,7 +5,7 @@ models workflows as typed directed graphs, validates them before execution, and
 keeps ownership of storage, networking, UI, and authentication in the host
 application.
 
-Version 0.1.1 delivers the modeling and validation foundation:
+Version 0.1.2 delivers the modeling and validation foundation:
 
 - canonical schemas with stable SHA-256 type fingerprints;
 - versioned YAML and JSON workflow documents;
@@ -57,19 +57,18 @@ logika-store = "0.1"
 logika-workflow = "0.1"
 ```
 
-The `logika` facade is available directly from this repository because that
-package name belongs to an unrelated project on crates.io:
+The `logika` facade provides the complete embedded API with default features:
 
 ```toml
 [dependencies]
-logika = { git = "https://github.com/aviancode/logika", tag = "v0.1.1" }
+logika = "0.1.2"
 ```
 
 ## Workspace
 
 | Crate | Version 0.1 role | Published |
 | --- | --- | --- |
-| `logika` | Feature-gated facade for the embedded API | Git only |
+| `logika` | Feature-gated facade for the embedded API | crates.io |
 | `logika-core` | Identifiers, schemas, ports, and public errors | crates.io |
 | `logika-workflow` | Document decoding, migration, and validation | crates.io |
 | `logika-registry` | In-memory local node and schema registry | crates.io |
@@ -97,8 +96,8 @@ cargo doc --workspace --no-deps
 
 ## Releases
 
-Pushing a workspace tag such as `v0.1.1` runs all CI checks and publishes the
-seven crates.io packages in dependency order. The repository must provide a
+Pushing a workspace tag such as `v0.1.2` runs all CI checks and publishes the
+eight crates.io packages in dependency order. The repository must provide a
 `CARGO_REGISTRY_TOKEN` Actions secret with permission to publish them. The
 workflow checks that the tag matches the workspace version and safely skips
 versions that already exist, so a partially completed release can be rerun.
