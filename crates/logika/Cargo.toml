@@ -1,0 +1,34 @@
+[package]
+name = "logika"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+description = "Embedded workflow engine facade"
+repository.workspace = true
+homepage.workspace = true
+readme = "README.md"
+# The `logika` package name belongs to an unrelated project on crates.io.
+publish = false
+
+[features]
+default = ["core", "workflow", "sdk", "registry", "store"]
+full = ["core", "workflow", "sdk", "registry", "store"]
+core = ["dep:logika-core"]
+workflow = ["dep:logika-workflow"]
+sdk = ["dep:logika-sdk"]
+registry = ["dep:logika-registry"]
+store = ["dep:logika-store"]
+
+[dependencies]
+logika-core = { workspace = true, optional = true }
+logika-registry = { workspace = true, optional = true }
+logika-sdk = { workspace = true, optional = true }
+logika-store = { workspace = true, optional = true }
+logika-workflow = { workspace = true, optional = true }
+
+[dev-dependencies]
+semver = "1"
+
+[lints]
+workspace = true

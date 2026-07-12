@@ -1,0 +1,39 @@
+{
+  "apiVersion": "logika.dev/v1",
+  "kind": "Workflow",
+  "metadata": {
+    "name": "enrich-order",
+    "version": "1.0.0"
+  },
+  "spec": {
+    "inputs": {
+      "order": "acme.order@1"
+    },
+    "nodes": [
+      {
+        "id": "validate",
+        "uses": "acme.validation/order@^1.2",
+        "with": {
+          "strict": true
+        }
+      },
+      {
+        "id": "enrich",
+        "uses": "acme.crm/enrich-customer@^2.0"
+      }
+    ],
+    "edges": [
+      {
+        "from": "$inputs.order",
+        "to": "validate.order"
+      },
+      {
+        "from": "validate.valid_order",
+        "to": "enrich.order"
+      }
+    ],
+    "outputs": {
+      "enriched_order": "enrich.order"
+    }
+  }
+}

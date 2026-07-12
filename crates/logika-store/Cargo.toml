@@ -1,0 +1,18 @@
+[package]
+name = "logika-store"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+description = "Persistence contracts for logika"
+repository.workspace = true
+homepage.workspace = true
+readme = "README.md"
+
+[dependencies]
+logika-core.workspace = true
+logika-workflow.workspace = true
+semver = "1"
+
+[lints]
+workspace = true

@@ -1,0 +1,11 @@
+[package]
+name = "logika-testkit"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+description = "Testing support for logika integrations"
+publish = false
+
+[lints]
+workspace = true

@@ -1,0 +1,25 @@
+{
+  "apiVersion": "logika.dev/v1",
+  "kind": "Workflow",
+  "metadata": {
+    "name": "incompatible-order-customer",
+    "version": "1.0.0"
+  },
+  "spec": {
+    "inputs": {
+      "order": "acme.order@1"
+    },
+    "nodes": [
+      {
+        "id": "load-customer",
+        "uses": "acme.customer/load@^1"
+      }
+    ],
+    "edges": [
+      {
+        "from": "$inputs.order",
+        "to": "load-customer.customer"
+      }
+    ]
+  }
+}

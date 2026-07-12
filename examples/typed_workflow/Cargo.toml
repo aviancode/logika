@@ -1,18 +1,18 @@
 [package]
-name = "orbita-typed-workflow-example"
+name = "logika-typed-workflow-example"
 version.workspace = true
 edition.workspace = true
 rust-version.workspace = true
 license.workspace = true
-description = "Placeholder for a typed orbita workflow example"
+description = "Placeholder for a typed logika workflow example"
 publish = false
 
 [[bin]]
-name = "orbita-typed-workflow-example"
+name = "logika-typed-workflow-example"
 path = "src/main.rs"
 
 [dependencies]
-orbita = { workspace = true }
+logika = { workspace = true }
 
 [lints]
 workspace = true

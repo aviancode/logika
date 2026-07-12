@@ -13,7 +13,7 @@ All notable changes to this project are documented in this file.
 - An in-memory local-node registry and object-safe in-memory workflow storage.
 - A typed Rust workflow builder and `Schema` derive with compile-time port
   compatibility checks.
-- The local `orbita validate` command with human-readable and JSON diagnostics
+- The local `logika validate` command with human-readable and JSON diagnostics
   and stable exit codes.
 - Release acceptance workflows covering the public facade, incompatible edge
   diagnostics, and CLI behavior.

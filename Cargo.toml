@@ -1,22 +1,22 @@
 [workspace]
 members = [
-    "crates/orbita",
-    "crates/orbita-cli",
-    "crates/orbita-core",
-    "crates/orbita-plugin-api",
-    "crates/orbita-plugin-host",
-    "crates/orbita-registry",
-    "crates/orbita-runtime",
-    "crates/orbita-sdk",
-    "crates/orbita-sdk-macros",
-    "crates/orbita-store",
-    "crates/orbita-testkit",
-    "crates/orbita-workflow",
+    "crates/logika",
+    "crates/logika-cli",
+    "crates/logika-core",
+    "crates/logika-plugin-api",
+    "crates/logika-plugin-host",
+    "crates/logika-registry",
+    "crates/logika-runtime",
+    "crates/logika-sdk",
+    "crates/logika-sdk-macros",
+    "crates/logika-store",
+    "crates/logika-testkit",
+    "crates/logika-workflow",
     "examples/typed_workflow",
 ]
 default-members = [
-    "crates/orbita",
-    "crates/orbita-cli",
+    "crates/logika",
+    "crates/logika-cli",
 ]
 resolver = "3"
 
@@ -25,21 +25,21 @@ version = "0.1.0"
 edition = "2024"
 license = "MIT"
 rust-version = "1.85"
-repository = "https://github.com/aviancode/orbita"
-homepage = "https://github.com/aviancode/orbita"
+repository = "https://github.com/aviancode/logika"
+homepage = "https://github.com/aviancode/logika"
 
 [workspace.dependencies]
-orbita = { path = "crates/orbita", version = "0.1.0" }
-orbita-core = { path = "crates/orbita-core", version = "0.1.0" }
-orbita-plugin-api = { path = "crates/orbita-plugin-api", version = "0.1.0" }
-orbita-plugin-host = { path = "crates/orbita-plugin-host", version = "0.1.0" }
-orbita-registry = { path = "crates/orbita-registry", version = "0.1.0" }
-orbita-runtime = { path = "crates/orbita-runtime", version = "0.1.0" }
-orbita-sdk = { path = "crates/orbita-sdk", version = "0.1.0" }
-orbita-sdk-macros = { path = "crates/orbita-sdk-macros", version = "0.1.0" }
-orbita-store = { path = "crates/orbita-store", version = "0.1.0" }
-orbita-testkit = { path = "crates/orbita-testkit", version = "0.1.0" }
-orbita-workflow = { path = "crates/orbita-workflow", version = "0.1.0" }
+logika = { path = "crates/logika", version = "0.1.0" }
+logika-core = { path = "crates/logika-core", version = "0.1.0" }
+logika-plugin-api = { path = "crates/logika-plugin-api", version = "0.1.0" }
+logika-plugin-host = { path = "crates/logika-plugin-host", version = "0.1.0" }
+logika-registry = { path = "crates/logika-registry", version = "0.1.0" }
+logika-runtime = { path = "crates/logika-runtime", version = "0.1.0" }
+logika-sdk = { path = "crates/logika-sdk", version = "0.1.0" }
+logika-sdk-macros = { path = "crates/logika-sdk-macros", version = "0.1.0" }
+logika-store = { path = "crates/logika-store", version = "0.1.0" }
+logika-testkit = { path = "crates/logika-testkit", version = "0.1.0" }
+logika-workflow = { path = "crates/logika-workflow", version = "0.1.0" }
 
 [workspace.lints.rust]
 unsafe_code = "forbid"
