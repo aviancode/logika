@@ -18,7 +18,7 @@ is planned for 0.2.
 
 ```toml
 [dependencies]
-logika = { git = "https://github.com/aviancode/logika", tag = "v0.1.0" }
+logika = { git = "https://github.com/aviancode/logika", tag = "v0.1.1" }
 ```
 
 The `logika` package name is already owned by an unrelated project on
@@ -30,7 +30,7 @@ modules. Disable default features to select only the parts an application uses:
 
 ```toml
 [dependencies]
-logika = { git = "https://github.com/aviancode/logika", tag = "v0.1.0", default-features = false, features = ["workflow"] }
+logika = { git = "https://github.com/aviancode/logika", tag = "v0.1.1", default-features = false, features = ["workflow"] }
 ```
 
 See the [repository](https://github.com/aviancode/logika) for examples and

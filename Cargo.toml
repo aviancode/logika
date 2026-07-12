@@ -21,7 +21,7 @@ default-members = [
 resolver = "3"
 
 [workspace.package]
-version = "0.1.0"
+version = "0.1.1"
 edition = "2024"
 license = "MIT"
 rust-version = "1.96"
@@ -29,17 +29,17 @@ repository = "https://github.com/aviancode/logika"
 homepage = "https://github.com/aviancode/logika"
 
 [workspace.dependencies]
-logika = { path = "crates/logika", version = "0.1.0" }
-logika-core = { path = "crates/logika-core", version = "0.1.0" }
-logika-plugin-api = { path = "crates/logika-plugin-api", version = "0.1.0" }
-logika-plugin-host = { path = "crates/logika-plugin-host", version = "0.1.0" }
-logika-registry = { path = "crates/logika-registry", version = "0.1.0" }
-logika-runtime = { path = "crates/logika-runtime", version = "0.1.0" }
-logika-sdk = { path = "crates/logika-sdk", version = "0.1.0" }
-logika-sdk-macros = { path = "crates/logika-sdk-macros", version = "0.1.0" }
-logika-store = { path = "crates/logika-store", version = "0.1.0" }
-logika-testkit = { path = "crates/logika-testkit", version = "0.1.0" }
-logika-workflow = { path = "crates/logika-workflow", version = "0.1.0" }
+logika = { path = "crates/logika", version = "0.1.1" }
+logika-core = { path = "crates/logika-core", version = "0.1.1" }
+logika-plugin-api = { path = "crates/logika-plugin-api", version = "0.1.1" }
+logika-plugin-host = { path = "crates/logika-plugin-host", version = "0.1.1" }
+logika-registry = { path = "crates/logika-registry", version = "0.1.1" }
+logika-runtime = { path = "crates/logika-runtime", version = "0.1.1" }
+logika-sdk = { path = "crates/logika-sdk", version = "0.1.1" }
+logika-sdk-macros = { path = "crates/logika-sdk-macros", version = "0.1.1" }
+logika-store = { path = "crates/logika-store", version = "0.1.1" }
+logika-testkit = { path = "crates/logika-testkit", version = "0.1.1" }
+logika-workflow = { path = "crates/logika-workflow", version = "0.1.1" }
 
 [workspace.lints.rust]
 unsafe_code = "forbid"

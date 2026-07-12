@@ -2,6 +2,14 @@
 
 All notable changes to this project are documented in this file.
 
+## [0.1.1] - 2026-07-12
+
+### Changed
+
+- Raised the minimum supported Rust version to 1.96 and pinned local and CI
+  tooling to Rust 1.96.1.
+- Updated the registry implementation for the Rust 1.96 Clippy lint set.
+
 ## [0.1.0] - 2026-07-11
 
 ### Added
