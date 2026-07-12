@@ -1,8 +1,7 @@
 //! Stable facade for embedding the `logika` workflow engine.
 //!
-//! Workflow modeling, validation, and runtime lifecycle building blocks are
-//! available as opt-in features. Scheduling and plugin hosting are added by
-//! later release stages.
+//! Workflow modeling, validation, and bounded DAG scheduling are available as
+//! opt-in features. Plugin hosting is added by later release stages.
 
 #![forbid(unsafe_code)]
 
