@@ -5,7 +5,9 @@
 use std::collections::BTreeMap;
 
 use logika_core::{Error, ErrorCategory, ErrorDetail, PluginId, Result, TypeRef};
-use logika_workflow::{NodeInterface, NodeReference, TypeReference, ValidationResolver};
+use logika_workflow::{
+    CompilationResolver, NodeInterface, NodeReference, TypeReference, ValidationResolver,
+};
 use semver::Version;
 
 /// Description of one locally registered Rust node implementation.
@@ -245,6 +247,12 @@ impl ValidationResolver for NodeRegistry {
 
     fn resolve_type(&self, reference: &TypeReference) -> Option<&TypeRef> {
         self.types.get(reference.name())?.get(&reference.version())
+    }
+}
+
+impl CompilationResolver for NodeRegistry {
+    fn resolve_node_version(&self, reference: &NodeReference) -> Option<&Version> {
+        self.find(reference).map(NodeDescriptor::version)
     }
 }
 

@@ -3,9 +3,11 @@
 Versioned workflow documents and pre-execution validation for Logika.
 
 The crate decodes the `logika.dev/v1` YAML and JSON formats, reports
-source-aware diagnostics, migrates supported older documents, and validates
-graph references, port contracts, type compatibility, connection cardinality,
-and unsupported cycles.
+source-aware diagnostics, migrates supported older documents, validates graph
+contracts, and compiles valid documents into immutable `ExecutionPlan` values.
+Plans contain exact resolved node versions, canonical port types, deterministic
+topological dependencies, an explicit execution policy, a content hash, and a
+workflow-plus-lock cache key.
 
 ```rust
 use logika_workflow::decode_yaml;
@@ -24,10 +26,12 @@ assert_eq!(decoded.document().metadata().name(), "empty");
 ```
 
 Validation uses the `ValidationResolver` trait to resolve node interfaces and
-canonical schemas. `logika-registry` supplies an in-memory implementation for
-local Rust nodes.
+canonical schemas. Compilation additionally uses `CompilationResolver` for the
+exact selected versions. `logika-registry` supplies an in-memory implementation
+of both contracts for local Rust nodes.
 
-Version 0.1 validates workflows but does not execute them.
+Plan compilation performs no I/O and does not execute node code. Asynchronous
+execution remains the responsibility of `logika-runtime`.
 
 See the [API documentation](https://docs.rs/logika-workflow) and the
 [repository](https://github.com/aviancode/logika).
