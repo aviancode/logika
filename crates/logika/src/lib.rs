@@ -1,7 +1,8 @@
 //! Stable facade for embedding the `logika` workflow engine.
 //!
-//! Version 0.1 exposes workflow modeling and validation as opt-in features.
-//! Asynchronous execution and plugin hosting are planned for later releases.
+//! Workflow modeling, validation, and runtime lifecycle building blocks are
+//! available as opt-in features. Scheduling and plugin hosting are added by
+//! later release stages.
 
 #![forbid(unsafe_code)]
 
@@ -9,6 +10,8 @@
 pub use logika_core as core;
 #[cfg(feature = "registry")]
 pub use logika_registry as registry;
+#[cfg(feature = "runtime")]
+pub use logika_runtime as runtime;
 #[cfg(feature = "sdk")]
 pub use logika_sdk as sdk;
 #[cfg(feature = "store")]

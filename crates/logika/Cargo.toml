@@ -11,9 +11,10 @@ readme = "README.md"
 
 [features]
 default = ["core", "workflow", "sdk", "registry", "store"]
-full = ["core", "workflow", "sdk", "registry", "store"]
+full = ["core", "workflow", "runtime", "sdk", "registry", "store"]
 core = ["dep:logika-core"]
 workflow = ["dep:logika-workflow"]
+runtime = ["core", "workflow", "dep:logika-runtime"]
 sdk = ["dep:logika-sdk"]
 registry = ["dep:logika-registry"]
 store = ["dep:logika-store"]
@@ -21,6 +22,7 @@ store = ["dep:logika-store"]
 [dependencies]
 logika-core = { workspace = true, optional = true }
 logika-registry = { workspace = true, optional = true }
+logika-runtime = { workspace = true, optional = true }
 logika-sdk = { workspace = true, optional = true }
 logika-store = { workspace = true, optional = true }
 logika-workflow = { workspace = true, optional = true }

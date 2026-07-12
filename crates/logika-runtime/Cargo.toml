@@ -7,5 +7,12 @@ license.workspace = true
 description = "Workflow runtime for logika"
 publish = false
 
+[dependencies]
+logika-core.workspace = true
+logika-workflow.workspace = true
+semver = "1"
+tokio = { version = "1", features = ["time"] }
+tokio-util = "0.7"
+
 [lints]
 workspace = true
