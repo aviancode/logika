@@ -4,6 +4,7 @@ on:
   pull_request:
   push:
     branches: [develop, main]
+    tags: ["v*"]
 
 permissions:
   contents: read
@@ -35,3 +36,81 @@ jobs:
         with:
           toolchain: 1.85.0
       - run: cargo test --workspace --all-targets --all-features
+
+  publish:
+    name: Publish crates.io packages
+    if: startsWith(github.ref, 'refs/tags/v')
+    needs: [lint, test]
+    runs-on: ubuntu-latest
+    concurrency:
+      group: crates-io-publish
+      cancel-in-progress: false
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dtolnay/rust-toolchain@master
+        with:
+          toolchain: 1.85.0
+      - name: Validate release tag
+        shell: bash
+        run: |
+          set -euo pipefail
+          version="${GITHUB_REF_NAME#v}"
+          workspace_version="$(
+            cargo metadata --no-deps --format-version 1 |
+              jq -r '.packages[] | select(.name == "logika-core") | .version'
+          )"
+          if [[ "$GITHUB_REF_NAME" != "v$workspace_version" ]]; then
+            echo "tag $GITHUB_REF_NAME does not match workspace version $workspace_version" >&2
+            exit 1
+          fi
+          echo "RELEASE_VERSION=$version" >> "$GITHUB_ENV"
+      - name: Publish workspace crates
+        shell: bash
+        env:
+          CARGO_REGISTRY_TOKEN: ${{ secrets.CARGO_REGISTRY_TOKEN }}
+        run: |
+          set -euo pipefail
+
+          is_published() {
+            cargo info --registry crates-io "$1@$RELEASE_VERSION" >/dev/null 2>&1
+          }
+
+          wait_until_published() {
+            local crate="$1"
+            for attempt in {1..30}; do
+              if is_published "$crate"; then
+                return 0
+              fi
+              echo "waiting for $crate@$RELEASE_VERSION in the crates.io index ($attempt/30)"
+              sleep 10
+            done
+            echo "$crate@$RELEASE_VERSION did not appear in the crates.io index" >&2
+            return 1
+          }
+
+          publish_crate() {
+            local crate="$1"
+            if is_published "$crate"; then
+              echo "$crate@$RELEASE_VERSION is already published; skipping"
+              return 0
+            fi
+
+            cargo publish --registry crates-io --package "$crate"
+            wait_until_published "$crate"
+          }
+
+          # Keep this list in dependency order. Waiting after every upload makes
+          # reruns safe and lets Cargo resolve newly published path dependencies.
+          crates=(
+            logika-core
+            logika-sdk-macros
+            logika-workflow
+            logika-registry
+            logika-sdk
+            logika-store
+            logika-cli
+          )
+
+          for crate in "${crates[@]}"; do
+            publish_crate "$crate"
+          done

@@ -30,12 +30,11 @@ modules. Disable default features to select only the parts an application uses:
 
 ```toml
 [dependencies]
-logika = { version = "0.1", default-features = false, features = ["workflow"] }
+logika = { git = "https://github.com/aviancode/logika", tag = "v0.1.0", default-features = false, features = ["workflow"] }
 ```
 
-See the [API documentation](https://docs.rs/logika) and the
-[repository](https://github.com/aviancode/logika) for examples and release
-notes.
+See the [repository](https://github.com/aviancode/logika) for examples and
+release notes.
 
 ## License
 

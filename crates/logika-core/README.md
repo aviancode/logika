@@ -9,9 +9,10 @@ This crate provides:
 - payload validation against portable schemas; and
 - classified public errors with machine-readable diagnostic codes.
 
-Most applications should depend on the [`logika`](https://crates.io/crates/logika)
-facade. Use `logika-core` directly when implementing an adapter or another
-Logika crate.
+Applications that want the combined facade can use the Git-hosted
+[`logika`](https://github.com/aviancode/logika/tree/main/crates/logika) crate.
+Use `logika-core` directly when implementing an adapter or another Logika
+crate.
 
 ```rust
 use logika_core::{PrimitiveType, SchemaDefinition, TypeRef};
