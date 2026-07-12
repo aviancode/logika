@@ -217,22 +217,22 @@ impl NodeRegistry {
                     .and_then(|versions| versions.get(&type_ref.version()))
             });
 
-        if let Some(registered) = registered {
-            if registered != type_ref {
-                return Err(Error::new(
-                    ErrorCategory::Schema,
-                    ErrorDetail::new(
-                        "registry.conflicting_schema",
-                        format!(
-                            "schema {}@{} conflicts with registered fingerprint {} (candidate {})",
-                            type_ref.name(),
-                            type_ref.version(),
-                            registered.fingerprint(),
-                            type_ref.fingerprint()
-                        ),
+        if let Some(registered) = registered
+            && registered != type_ref
+        {
+            return Err(Error::new(
+                ErrorCategory::Schema,
+                ErrorDetail::new(
+                    "registry.conflicting_schema",
+                    format!(
+                        "schema {}@{} conflicts with registered fingerprint {} (candidate {})",
+                        type_ref.name(),
+                        type_ref.version(),
+                        registered.fingerprint(),
+                        type_ref.fingerprint()
                     ),
-                ));
-            }
+                ),
+            ));
         }
         Ok(())
     }

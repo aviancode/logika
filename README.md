@@ -86,7 +86,7 @@ Release notes are kept in [`CHANGELOG.md`](CHANGELOG.md).
 
 ## Development
 
-The workspace uses Rust 1.85.0 and Edition 2024. Run the same checks as CI with:
+The workspace uses Rust 1.96.1 and Edition 2024. Run the same checks as CI with:
 
 ```console
 cargo fmt --check
