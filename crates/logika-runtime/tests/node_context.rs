@@ -33,6 +33,7 @@ fn node_context_carries_attempt_and_immutable_run_metadata() {
 
     assert_eq!(context.node_id(), &node_id);
     assert_eq!(context.attempt().get(), 2);
+    assert_eq!(context.idempotency_key(), "run-context/enrich/2");
     assert_eq!(context.run().run_id(), run.metadata().run_id());
     assert_eq!(context.run().plan_hash(), plan.plan_hash());
     assert_eq!(context.run().correlation_id(), "trace-7");

@@ -2,6 +2,7 @@ use std::{
     collections::{BTreeMap, BTreeSet},
     error, fmt,
     num::NonZeroU32,
+    time::Duration,
 };
 
 use logika_core::{NodeId, PluginId, PortId, TypeRef};
@@ -47,7 +48,7 @@ hash_type!(
     PlanHash
 );
 hash_type!(
-    /// SHA-256 cache lookup key derived from the workflow and lock snapshot.
+    /// SHA-256 cache lookup key derived from workflow, lock, and execution policy.
     PlanCacheKey
 );
 hash_type!(
@@ -75,29 +76,111 @@ impl Default for LockHash {
     }
 }
 
-/// Execution constraints embedded in a compiled plan.
-///
-/// Release 0.2 starts with an explicit attempt limit. Backoff, timeout, and
-/// retry classification are runtime concerns added by the resilience layer.
-#[derive(Clone, Copy, Debug, Eq, PartialEq)]
+/// Retry and timeout constraints embedded in a compiled plan.
+#[derive(Clone, Debug, Eq, PartialEq)]
 #[non_exhaustive]
 pub struct ExecutionPolicy {
     max_attempts: NonZeroU32,
+    initial_backoff: Duration,
+    max_backoff: Duration,
+    jitter: Duration,
+    attempt_timeout: Option<Duration>,
+    retriable_codes: BTreeSet<String>,
 }
 
 impl ExecutionPolicy {
-    /// Returns the fail-fast policy used before runtime resilience is enabled.
+    /// Returns a fail-fast policy with no attempt timeout.
     #[must_use]
-    pub const fn single_attempt() -> Self {
+    pub fn single_attempt() -> Self {
         Self {
             max_attempts: NonZeroU32::MIN,
+            initial_backoff: Duration::ZERO,
+            max_backoff: Duration::ZERO,
+            jitter: Duration::ZERO,
+            attempt_timeout: None,
+            retriable_codes: BTreeSet::new(),
         }
+    }
+
+    /// Creates a retry policy with exponential backoff defaults.
+    ///
+    /// Errors remain non-retriable until their exact diagnostic codes are
+    /// added with [`Self::with_retriable_code`].
+    #[must_use]
+    pub fn retry(max_attempts: NonZeroU32) -> Self {
+        Self {
+            max_attempts,
+            initial_backoff: Duration::from_millis(100),
+            max_backoff: Duration::from_secs(30),
+            jitter: Duration::from_millis(100),
+            attempt_timeout: None,
+            retriable_codes: BTreeSet::new(),
+        }
+    }
+
+    /// Replaces the exponential backoff bounds and maximum additive jitter.
+    #[must_use]
+    pub fn with_backoff(mut self, initial: Duration, maximum: Duration, jitter: Duration) -> Self {
+        self.initial_backoff = initial;
+        self.max_backoff = maximum;
+        self.jitter = jitter;
+        self
+    }
+
+    /// Sets the maximum duration of each node attempt.
+    #[must_use]
+    pub fn with_attempt_timeout(mut self, timeout: Duration) -> Self {
+        self.attempt_timeout = Some(timeout);
+        self
+    }
+
+    /// Adds one exact public error code to the retry classification.
+    #[must_use]
+    pub fn with_retriable_code(mut self, code: impl Into<String>) -> Self {
+        self.retriable_codes.insert(code.into());
+        self
     }
 
     /// Returns the maximum attempts permitted for one node invocation.
     #[must_use]
-    pub const fn max_attempts(self) -> NonZeroU32 {
+    pub const fn max_attempts(&self) -> NonZeroU32 {
         self.max_attempts
+    }
+
+    /// Returns the initial exponential backoff delay.
+    #[must_use]
+    pub const fn initial_backoff(&self) -> Duration {
+        self.initial_backoff
+    }
+
+    /// Returns the upper bound for exponential backoff before jitter.
+    #[must_use]
+    pub const fn max_backoff(&self) -> Duration {
+        self.max_backoff
+    }
+
+    /// Returns the maximum additive jitter applied to a backoff delay.
+    #[must_use]
+    pub const fn jitter(&self) -> Duration {
+        self.jitter
+    }
+
+    /// Returns the timeout applied independently to each node attempt.
+    #[must_use]
+    pub const fn attempt_timeout(&self) -> Option<Duration> {
+        self.attempt_timeout
+    }
+
+    /// Returns the exact diagnostic codes classified as retriable.
+    #[must_use]
+    pub const fn retriable_codes(&self) -> &BTreeSet<String> {
+        &self.retriable_codes
+    }
+
+    /// Returns whether an executor error code is eligible for retry.
+    #[must_use]
+    pub fn is_retriable(&self, code: &str) -> bool {
+        self.retriable_codes.contains(code)
     }
 }
 
@@ -108,22 +191,45 @@ impl Default for ExecutionPolicy {
 }
 
 /// Inputs that affect deterministic plan compilation.
-#[derive(Clone, Copy, Debug, Default, Eq, PartialEq)]
+#[derive(Clone, Debug, Eq, PartialEq)]
 pub struct CompilationOptions {
     lock_hash: LockHash,
+    policy: ExecutionPolicy,
 }
 
 impl CompilationOptions {
     /// Creates options for a particular lock snapshot.
     #[must_use]
     pub fn new(lock_hash: LockHash) -> Self {
-        Self { lock_hash }
+        Self {
+            lock_hash,
+            policy: ExecutionPolicy::default(),
+        }
+    }
+
+    /// Compiles the supplied resilience policy into every plan node.
+    #[must_use]
+    pub fn with_policy(mut self, policy: ExecutionPolicy) -> Self {
+        self.policy = policy;
+        self
     }
 
     /// Returns the lock snapshot fingerprint.
     #[must_use]
-    pub const fn lock_hash(self) -> LockHash {
+    pub const fn lock_hash(&self) -> LockHash {
         self.lock_hash
+    }
+
+    /// Returns the resilience policy to compile into the plan.
+    #[must_use]
+    pub const fn policy(&self) -> &ExecutionPolicy {
+        &self.policy
+    }
+}
+
+impl Default for CompilationOptions {
+    fn default() -> Self {
+        Self::new(LockHash::default())
     }
 }
 
@@ -202,8 +308,8 @@ impl PlanNode {
 
     /// Returns the execution policy compiled for this node.
     #[must_use]
-    pub const fn policy(&self) -> ExecutionPolicy {
-        self.policy
+    pub const fn policy(&self) -> &ExecutionPolicy {
+        &self.policy
     }
 }
 
@@ -309,8 +415,8 @@ impl ExecutionPlan {
 
     /// Returns the default execution policy compiled into the plan.
     #[must_use]
-    pub const fn policy(&self) -> ExecutionPolicy {
-        self.policy
+    pub const fn policy(&self) -> &ExecutionPolicy {
+        &self.policy
     }
 
     /// Returns the identity of the compiled plan contents.
@@ -319,7 +425,7 @@ impl ExecutionPlan {
         self.plan_hash
     }
 
-    /// Returns the workflow-plus-lock cache lookup key.
+    /// Returns the workflow, lock, and execution-policy cache lookup key.
     #[must_use]
     pub const fn cache_key(&self) -> PlanCacheKey {
         self.cache_key
@@ -388,7 +494,7 @@ impl From<ValidationErrors> for CompilationError {
 /// Validates and compiles a workflow into an immutable execution plan.
 ///
 /// Compilation performs no I/O and never executes node code. The cache key is
-/// based only on canonical workflow contents and the supplied lock fingerprint;
+/// based only on canonical workflow contents, lock fingerprint, and policy;
 /// the plan hash additionally covers exact resolved versions, schemas, graph
 /// dependencies, configuration, and policy.
 pub fn compile_workflow<R>(
@@ -406,7 +512,7 @@ where
     let (dependencies, order) = dependency_order(document);
     let edges = compile_edges(document, &inputs, &drafts)?;
     let outputs = compile_outputs(document, &inputs, &drafts)?;
-    let policy = ExecutionPolicy::default();
+    let policy = options.policy().clone();
 
     let mut nodes = Vec::with_capacity(order.len());
     for id in order {
@@ -427,12 +533,12 @@ where
                 .get(&id)
                 .map(|items| items.iter().cloned().collect())
                 .unwrap_or_default(),
-            policy,
+            policy: policy.clone(),
         });
     }
 
-    let cache_key = workflow_cache_key(document, options.lock_hash())?;
-    let plan_hash = hash_plan(document, &inputs, &nodes, &edges, &outputs, policy)?;
+    let cache_key = workflow_cache_key(document, options.lock_hash(), &policy)?;
+    let plan_hash = hash_plan(document, &inputs, &nodes, &edges, &outputs, &policy)?;
 
     Ok(ExecutionPlan {
         workflow_name: document.metadata().name().to_owned(),
@@ -620,10 +726,12 @@ fn endpoint_key(edge: &EdgeDefinition) -> (String, String) {
 fn workflow_cache_key(
     document: &WorkflowDocument,
     lock_hash: LockHash,
+    policy: &ExecutionPolicy,
 ) -> Result<PlanCacheKey, CompilationError> {
     let mut hasher = CanonicalHasher::new(b"logika.plan-cache.v1");
     hash_workflow_document(&mut hasher, document)?;
     hasher.bytes(lock_hash.as_bytes());
+    hash_policy(&mut hasher, policy);
     Ok(PlanCacheKey(hasher.finish()))
 }
 
@@ -633,7 +741,7 @@ fn hash_plan(
     nodes: &[PlanNode],
     edges: &[PlanEdge],
     outputs: &BTreeMap<PortId, PlanOutput>,
-    policy: ExecutionPolicy,
+    policy: &ExecutionPolicy,
 ) -> Result<PlanHash, CompilationError> {
     let mut hasher = CanonicalHasher::new(b"logika.execution-plan.v1");
     hasher.text(document.metadata().name());
@@ -650,7 +758,7 @@ fn hash_plan(
         for dependency in node.dependencies() {
             hasher.text(dependency.as_str());
         }
-        hasher.u32(node.policy().max_attempts().get());
+        hash_policy(&mut hasher, node.policy());
     }
     hasher.usize(edges.len());
     for edge in edges {
@@ -664,8 +772,31 @@ fn hash_plan(
         hasher.text(&output.source().to_string());
         hash_type_ref(&mut hasher, output.payload_type());
     }
-    hasher.u32(policy.max_attempts().get());
+    hash_policy(&mut hasher, policy);
     Ok(PlanHash(hasher.finish()))
+}
+
+fn hash_policy(hasher: &mut CanonicalHasher, policy: &ExecutionPolicy) {
+    hasher.u32(policy.max_attempts().get());
+    hash_duration(hasher, policy.initial_backoff());
+    hash_duration(hasher, policy.max_backoff());
+    hash_duration(hasher, policy.jitter());
+    match policy.attempt_timeout() {
+        Some(timeout) => {
+            hasher.u8(1);
+            hash_duration(hasher, timeout);
+        }
+        None => hasher.u8(0),
+    }
+    hasher.usize(policy.retriable_codes().len());
+    for code in policy.retriable_codes() {
+        hasher.text(code);
+    }
+}
+
+fn hash_duration(hasher: &mut CanonicalHasher, duration: Duration) {
+    hasher.u64(duration.as_secs());
+    hasher.u32(duration.subsec_nanos());
 }
 
 fn hash_workflow_document(
@@ -771,6 +902,10 @@ impl CanonicalHasher {
     }
 
     fn u32(&mut self, value: u32) {
+        self.0.update(value.to_be_bytes());
+    }
+
+    fn u64(&mut self, value: u64) {
         self.0.update(value.to_be_bytes());
     }
 

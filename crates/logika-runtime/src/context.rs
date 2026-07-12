@@ -16,19 +16,30 @@ pub struct NodeContext {
     run: Arc<RunMetadata>,
     node_id: NodeId,
     attempt: NonZeroU32,
+    idempotency_key: String,
     deadline: Option<Instant>,
     cancellation_token: CancellationToken,
 }
 
 impl NodeContext {
     pub(crate) fn from_run(run: &Run, node_id: NodeId, attempt: NonZeroU32) -> Self {
+        let idempotency_key = format!("{}/{}/{}", run.metadata().run_id(), node_id, attempt);
         Self {
             run: run.shared_metadata(),
             node_id,
             attempt,
+            idempotency_key,
             deadline: run.deadline(),
             cancellation_token: run.cancellation_token(),
         }
+    }
+
+    pub(crate) fn for_attempt(&self, attempt: NonZeroU32) -> Self {
+        let mut context = self.clone();
+        context.attempt = attempt;
+        context.idempotency_key =
+            format!("{}/{}/{}", context.run.run_id(), context.node_id, attempt);
+        context
     }
 
     /// Returns immutable metadata for the parent workflow run.
@@ -47,6 +58,15 @@ impl NodeContext {
     #[must_use]
     pub const fn attempt(&self) -> NonZeroU32 {
         self.attempt
+    }
+
+    /// Returns the stable key for deduplicating this at-least-once attempt.
+    ///
+    /// The key has the form `run_id/node_id/attempt` and should be forwarded
+    /// to external systems when an attempt can produce durable side effects.
+    #[must_use]
+    pub fn idempotency_key(&self) -> &str {
+        &self.idempotency_key
     }
 
     /// Returns the absolute deadline inherited from the run, if configured.

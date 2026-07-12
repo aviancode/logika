@@ -1,11 +1,11 @@
 //! Public contract tests for deterministic workflow plan compilation.
 
-use std::collections::BTreeMap;
+use std::{collections::BTreeMap, num::NonZeroU32, time::Duration};
 
 use logika_core::{NodeId, PortId, PrimitiveType, SchemaDefinition, TypeRef};
 use logika_workflow::{
-    CompilationOptions, CompilationResolver, EdgeDefinition, Endpoint, InputPort, LockHash,
-    NodeDefinition, NodeInterface, NodeReference, TypeReference, ValidationResolver,
+    CompilationOptions, CompilationResolver, EdgeDefinition, Endpoint, ExecutionPolicy, InputPort,
+    LockHash, NodeDefinition, NodeInterface, NodeReference, TypeReference, ValidationResolver,
     WorkflowDocument, WorkflowMetadata, WorkflowSpec, compile_workflow,
 };
 use semver::Version;
@@ -143,6 +143,42 @@ fn cache_key_changes_with_lock_but_plan_identity_does_not() {
 
     assert_eq!(first.plan_hash(), second.plan_hash());
     assert_ne!(first.cache_key(), second.cache_key());
+}
+
+#[test]
+fn resilience_policy_is_part_of_plan_and_cache_identity() {
+    let resolver = resolver(type_ref("acme.value"));
+    let document = workflow(false);
+    let default = compile_workflow(&document, &resolver, CompilationOptions::default());
+    let Some(attempts) = NonZeroU32::new(3) else {
+        panic!("three must be non-zero");
+    };
+    let policy = ExecutionPolicy::retry(attempts)
+        .with_backoff(
+            Duration::from_millis(25),
+            Duration::from_secs(1),
+            Duration::from_millis(5),
+        )
+        .with_attempt_timeout(Duration::from_secs(2))
+        .with_retriable_code("acme.temporary");
+    let resilient = compile_workflow(
+        &document,
+        &resolver,
+        CompilationOptions::default().with_policy(policy.clone()),
+    );
+    let (Ok(default), Ok(resilient)) = (default, resilient) else {
+        panic!("valid workflow did not compile");
+    };
+
+    assert_eq!(resilient.policy(), &policy);
+    assert!(
+        resilient
+            .nodes()
+            .iter()
+            .all(|node| node.policy() == &policy)
+    );
+    assert_ne!(default.plan_hash(), resilient.plan_hash());
+    assert_ne!(default.cache_key(), resilient.cache_key());
 }
 
 #[test]

@@ -7,7 +7,7 @@ source-aware diagnostics, migrates supported older documents, validates graph
 contracts, and compiles valid documents into immutable `ExecutionPlan` values.
 Plans contain exact resolved node versions, canonical port types, deterministic
 topological dependencies, an explicit execution policy, a content hash, and a
-workflow-plus-lock cache key.
+workflow-plus-lock-plus-policy cache key.
 
 ```rust
 use logika_workflow::decode_yaml;
